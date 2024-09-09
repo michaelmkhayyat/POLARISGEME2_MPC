@@ -1126,7 +1126,7 @@
 
 
   <!-- ************************** Top LiDAR ************************** -->
-
+<!--
   <xacro:if value="${velodyne_points}">
 
     <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/>
@@ -1136,9 +1136,9 @@
     </xacro:VLP-16>
 
   </xacro:if>
-
+-->
   <!-- ************************* Front Laser ************************* -->
-
+<!--
   <xacro:if value="${laser_points}">
 
     <xacro:include filename="$(find gem_description)/urdf/sick_laser_points.gazebo"/>
@@ -1182,9 +1182,9 @@
 
   </xacro:if>
 
-
+-->
   <!-- ************************* Front Camera ************************* -->
-
+  <!--
   <link name="front_single_camera_link">
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -1212,7 +1212,7 @@
     <child link="front_single_camera_link"/>
   </joint>
 
-
+  -->
   <!-- ************************ Stereo Camera ************************ -->
 
   <!--
@@ -1356,7 +1356,7 @@
   -->
 
   <!-- ************************* Rear Sonar ************************** -->
-
+	<!--
   <link name="rear_sonar_link">
     <inertial>
       <mass value="0.001" />
@@ -1383,10 +1383,11 @@
     <parent link="rear_rack_link"/>
     <child link="rear_sonar_link"/>
   </joint>
-
+-->
   <!-- *************************************************************** -->
 
 </robot>
+
 
 
 

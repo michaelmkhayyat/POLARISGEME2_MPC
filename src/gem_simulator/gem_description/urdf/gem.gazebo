@@ -410,7 +410,7 @@
         </noise>
       </camera>
       <plugin name="stereo_camera_controller" filename="libgazebo_ros_multicamera.so">
-        <alwaysOn>true</alwaysOn>
+        <alwaysOn>false</alwaysOn>
         <updateRate>0.0</updateRate>
         <cameraName>stereo/camera</cameraName>
         <imageTopicName>image_raw</imageTopicName>
@@ -439,4 +439,6 @@
   </gazebo>
 
 </robot>
+
+
 

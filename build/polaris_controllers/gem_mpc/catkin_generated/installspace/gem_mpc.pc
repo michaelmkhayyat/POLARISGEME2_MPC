@@ -1,0 +1,8 @@
+prefix=/home/michael/Desktop/POLARISGEME2_MPC/install
+
+Name: gem_mpc
+Description: Description of gem_mpc
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
