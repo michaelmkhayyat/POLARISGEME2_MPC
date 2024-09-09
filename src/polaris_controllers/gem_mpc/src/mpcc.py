@@ -485,7 +485,7 @@ def main():
     mpc_controller = MPCC(spawn_obstacles)
     rospy.sleep(1)
     rate = rospy.Rate(10)
-    mpc_controller.set_cost_params(qc=0.5, 
+    mpc_controller.set_cost_params(qc=0.25, 
                                    ql=0.1, 
                                    Ru = np.array([10, 10]),
                                    Rv = 0.1,

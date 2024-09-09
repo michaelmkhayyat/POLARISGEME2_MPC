@@ -265,7 +265,7 @@ So, now we are introduce the approximate contouring error $\hat{e}^c$, and the a
 $$
 \begin{array}{l}
 e^c \approx \hat{e}^c(X, Y, \theta_A) = \sin(\phi(\theta_A))  (X - X_{\text{ref}}(\theta_A)) - \cos(\phi(\theta_A)) (Y - Y_{\text{ref}}(\theta_A)) \\
-e^l \approx \hat{e}^L(X, Y, \theta_A) = - \cos(\phi(\theta_A))  (X - X_{\text{ref}}(\theta_A)) - \sin(\phi(\theta_A)) (Y - Y_{\text{ref}}(\theta_A))
+e^l \approx \hat{e}^l(X, Y, \theta_A) = - \cos(\phi(\theta_A))  (X - X_{\text{ref}}(\theta_A)) - \sin(\phi(\theta_A)) (Y - Y_{\text{ref}}(\theta_A))
 \end{array}
 $$
 
