@@ -28,7 +28,7 @@ def compute_boundaries(x, y, normals, width):
 
 def save_to_csv_file(filename, points):
     """Saves the points to a CSV file."""
-    df = pd.DataFrame(points, columns=["x", "y"])
+    df = pd.DataFrame(points)
     df.to_csv(filename, index=False)
     print(f"Saved to {filename}")
 
@@ -46,7 +46,7 @@ def plot_path_with_boundaries(x, y, left_x, left_y, right_x, right_y):
 
 # Parameters
 boundary_width = 4.5  # Distance from the path to the boundary
-x, y = read_path_from_csv('path.csv')
+x, y = read_path_from_csv('waypoints.csv')
 normals = compute_normals(x, y)
 left_x, left_y, right_x, right_y = compute_boundaries(x, y, normals, boundary_width)
 center_points = np.column_stack((x, y))

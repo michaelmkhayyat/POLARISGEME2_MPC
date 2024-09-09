@@ -19,26 +19,37 @@ This project implements a Model Predictive Control (MPC) framework for a Polaris
 <summary>Table of Contents</summary>
 <ol>
 <li>
-<a href="#about-the-project">About The Project</a>
-<ul>
-<li><a href="#built-with">Built With</a></li>
-</ul>
+<a href="#requirements">Requirements</a>
 </li>
 <li>
-<a href="#getting-started">Getting Started</a>
-<ul>
-<li><a href="#prerequisites">Prerequisites</a></li>
-<li><a href="#installation">Installation</a></li>
-</ul>
+<a href="#installation-instructions">Installation Instructions</a>
 </li>
 <li><a href="#usage">Usage</a></li>
-<li><a href="#roadmap">Roadmap</a></li>
-<li><a href="#contributing">Contributing</a></li>
+<li>
+<a href="#implementation-details">Implementation Details</a>
+    <ul>
+        <li><a href="#vehicle-model">Vehicle Model</a></li>
+        <li><a href="#vehicle-parameters">Vehicle Parameters</a></li>
+        <li><a href="#state-and-control-limits">State and Control Limits</a></li>
+        <li><a href="#obstacle-modeling">Obstacle Modeling</a></li>
+        <li><a href="#road-modeling">Road Modeling</a></li>
+        <li><a href="#overall-optimization-problem">Overall Optimization Problem</a></li>
+    </ul>
+</li>
+<li>
+<a href="#description-of-publishers-and-subscribers">Description of Publishers and Subscribers</a>
+    <ul>
+        <li><a href="#publishers">Publishers</a></li>
+        <li><a href="#subscribers">Subscribers</a></li>
+    </ul>
+</li>
+<li><a href="#docker-image">Docker Image</a></li>
+<li><a href="#general-considerations-and-comments">General Considerations and Comments</a></li>
 <li><a href="#license">License</a></li>
-<li><a href="#contact">Contact</a></li>
-<li><a href="#acknowledgments">Acknowledgments</a></li>
+<li><a href="#references">References</a></li>
 </ol>
 </details>
+
 
 ## Requirements
 

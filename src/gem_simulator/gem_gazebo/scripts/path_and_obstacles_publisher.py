@@ -141,13 +141,13 @@ class PathAndObstaclesPublisher:
         marker = Marker()
         marker.header.frame_id = "world"
         marker.header.stamp = rospy.Time.now()
-        marker.type = Marker.CUBE  # Change marker type to CUBE
+        marker.type = Marker.CUBE
         marker.id = idx
         marker.scale.x = obstacle[2]      # Set the cube's size (width)
         marker.scale.y = obstacle[2]      # Set the cube's size (depth)
         marker.scale.z = 1.0              # Set the cube's height
         marker.color.g = 1.0              # Set the color to green
-        marker.color.a = 0.6              # Set the transparency
+        marker.color.a = 1.0              # Set the transparency
         marker.pose.position.x = obstacle[0]
         marker.pose.position.y = obstacle[1]
         marker.pose.position.z = marker.scale.z * 0.5  # Position the cube
