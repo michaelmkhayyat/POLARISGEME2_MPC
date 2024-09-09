@@ -41,8 +41,8 @@ class MPCC:
 
         # Optimizer hyperparameters
 
-        self.T = 0.2
-        self.N = 15
+        self.T = 0.1
+        self.N = 20
 
         # Waypoints 
 
@@ -484,7 +484,7 @@ def main():
     spawn_obstacles = rospy.get_param('/spawn_obstacles', True)
     mpc_controller = MPCC(spawn_obstacles)
     rospy.sleep(1)
-    rate = rospy.Rate(20)
+    rate = rospy.Rate(10)
     mpc_controller.set_cost_params(qc=0.5, 
                                    ql=0.1, 
                                    Ru = np.array([10, 10]),
