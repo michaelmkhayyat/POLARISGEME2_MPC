@@ -171,7 +171,7 @@ $$
 F_{y} = D_f \sin \left( C_f \cdot \arctan \left( B_f \alpha_f \right) \right)
 $$
 
-However, at low to moderate speeds the linear range of the curve is utilized. Hence, for computational efficiency we adopt the formulation we presented earlier (nevertheless, both implementations are present in our code) -- Note that in racing or high speed applications we resort to combined slip models. However, this is out of the scope of the project.
+However, at low to moderate speeds the linear range of the curve is utilized. Hence, for computational efficiency we adopt the formulation we presented earlier -- Note that in racing or high speed applications we resort to combined slip models. However, this is out of the scope of the project.
 
 It is noteworthy that the model does not work properly at low speeds, due to the definition of $\beta$ (Unlike the kinematic bicycle model, $\beta$ here is defined dynamically). There are generally two approaches to remedy this problem:
 
