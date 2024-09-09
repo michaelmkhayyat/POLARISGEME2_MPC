@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+  <node name="logger" pkg="gem_mpc" type="logger.py" respawn="false" output="screen"/>
+  <node name="mpc_node" pkg="gem_mpc" type="mpcc.py" respawn="false" output="screen">
+  </node>
+</launch>
+
