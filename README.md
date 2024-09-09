@@ -58,7 +58,8 @@ This project implements a Model Predictive Control (MPC) framework for a Polaris
 
 ## Requirements
 
-The project has been developed and tested on [Ubuntu 20.04 LTS](https://releases.ubuntu.com/focal/) with ROS Noetic (Gazebo 11) and [CasADi](https://web.casadi.org/) 3.6.6. 
+The project has been developed and tested on a laptop equipped with an 11th Gen Intel Core(TM) i7-11800H @ 2.30GHz processor, running [Ubuntu 20.04 LTS](https://releases.ubuntu.com/focal/), ROS Noetic (Gazebo 11) and [CasADi](https://web.casadi.org/) 3.6.6.
+
 
 1. Install ROS Noetic and Gazebo 11 (Desktop-Full Install): [https://wiki.ros.org/noetic/Installation/Ubuntu](https://wiki.ros.org/noetic/Installation/Ubuntu)
 2. Install required ROS packages
@@ -67,7 +68,7 @@ sudo apt install ros-noetic-ackermann-msgs ros-noetic-geometry2 \
 ros-noetic-hector-gazebo ros-noetic-hector-models ros-noetic-jsk-rviz-plugins \
 ros-noetic-ros-control ros-noetic-ros-controllers ros-noetic-velodyne-simulator
 ```
-3. Install required Python packages
+1. Install required Python packages
 ```bash
 python3 -m pip install numpy==1.24.0 pandas==1.2.4 casadi==3.6.6
 ```
@@ -78,7 +79,7 @@ python3 -m pip install numpy==1.24.0 pandas==1.2.4 casadi==3.6.6
 ```bash
 git clone https://github.com/michaelmkhayyat/POLARISGEME2_MPC.git
 ```
-2. Compile the workspace
+1. Compile the workspace
 ```bash
 source /opt/ros/noetic/setup.bash
 cd ~/POLARISGEME2_MPC
