@@ -2,11 +2,11 @@
 <a id="readme-top"></a>
 <br />
 <div align="center">
-<a href="images">
-<img src="images/logo.png" alt="Logo" width="80" height="80">
-</a>
-
 <h3 align="center">MPC Controller for Polaris GEM e2</h3>
+
+<div align="center">
+<a href="images"><img src="./images/header.png" width="600"></a>
+</div>
 
 <p align="center">
 This project implements a Model Predictive Control (MPC) framework for a Polaris GEM e2 vehicle within the Gazebo simulation environment. The MPC controller is based on a dynamic vehicle model, and accounts for the vehicle's kinematic and dynamic constraints to ensure optimal path following and obstacle avoidance.
@@ -45,6 +45,7 @@ This project implements a Model Predictive Control (MPC) framework for a Polaris
 </li>
 <li><a href="#docker-image">Docker Image</a></li>
 <li><a href="#general-considerations-and-comments">General Considerations and Comments</a></li>
+<li><a href="#results">Results</a></li>
 <li><a href="#license">License</a></li>
 <li><a href="#references">References</a></li>
 </ol>
@@ -375,6 +376,22 @@ Some considerations regarding the implementation:
 2. We have commented out parts related to the Front Sonar and Camera from gem.urdf.xacro, as they were causing the following error sometimes: Segmentation fault (core dumped)
 
 3. It is advisable to run Gazebo in a *headless* manner to preserve computational power.
+   
+4. Note that the path in "waypoints.csv" *does not exactly match* the centerline of the track. However, we chose to use it to align with the other controllers presented in the original repository: https://gitlab.engr.illinois.edu/gemillins/POLARIS_GEM_e2/. It is possible to obtain the exact centerline of the track by examining 'simple_track_green.world' and its corresponding files.
+
+## General Considerations and Comments
+
+The following is the cross-track error during path tracking (without obstacles)
+
+<div align="center">
+<a href="images/results/no_obstacles/"><img src="./images/results/no_obstacles/cross_track_error.png" width="800"></a>
+</div>
+
+The following is the cross-track error during path tracking (with obstacles)
+
+<div align="center">
+<a href="images/results/no_obstacles/"><img src="./images/results/no_obstacles/cross_track_error.png" width="800"></a>
+</div>
 
 ## License
 

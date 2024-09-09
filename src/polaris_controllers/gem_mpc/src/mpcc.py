@@ -359,8 +359,8 @@ class MPCC:
                     J += 0.25*ca.if_else(dist_sq>=margin, -ca.log(dist_sq),  0.5 * (((dist_sq - 2 * margin) / margin)**2 - 1) - ca.log(margin)) 
 
         # Defining the road boundary constraints
-        self.MPC.subject_to(-4 +self.vehicle_params.geometry.radius <= self.waypoints.e_c(self.X[0,k], self.X[1,k], self.TH[k]))
-        self.MPC.subject_to(self.waypoints.e_c(self.X[0,k], self.X[1,k], self.TH[k]) <= 4 - self.vehicle_params.geometry.radius )
+        self.MPC.subject_to(-4.25 +self.vehicle_params.geometry.radius <= self.waypoints.e_c(self.X[0,k], self.X[1,k], self.TH[k]))
+        self.MPC.subject_to(self.waypoints.e_c(self.X[0,k], self.X[1,k], self.TH[k]) <= 4.25 - self.vehicle_params.geometry.radius )
 
         # Defining the state and control constraints
         self.MPC.subject_to(0 <= self.TH)
@@ -386,11 +386,16 @@ class MPCC:
         self.MPC.subject_to(self.vehicle_params.state_constraints.min_yaw_rate <= self.X[6,:])
         self.MPC.subject_to(self.X[6,:] <= self.vehicle_params.state_constraints.max_yaw_rate)
 
-
+        
         self.MPC.subject_to(self.X[:,0] == self.x0_param[0:7])
 
-        self.MPC.minimize(J)   
+        self.MPC.minimize(J)
 
+
+        # We have intentionally set the max_iter to be low in the IPOPT solver.
+        # As when we are running in RH fashion, we do not care about having a very accurate
+        # solution immediately, as with time (while running at high frequency), we will get more optimal
+        # solutions.
         p_opts = {'verbose_init': False,'jit': True}
         s_opts = {'tol': 1e-1, 'print_level': 0, 'max_iter': 20}
         rospy.logwarn("INTIALIZING SOLVER...")
@@ -462,14 +467,14 @@ class MPCC:
         self.acc = control[1,0]
 
     def run(self):
-        if self.current_arclength < self.waypoints.L - 10:
+        if self.current_arclength < self.waypoints.L - 15:
             self.solve_ocp()
             self.ackermann_msg.acceleration = self.acc
             self.ackermann_msg.steering_angle_velocity = self.delta_dot
             self.ackermann_msg.steering_angle = self.desired_delta
             self.ackermann_msg.speed = self.desired_v
         else:
-            self.ackermann_msg.speed = 0.0
+            self.ackermann_msg.speed = 0
             self.ackermann_msg.steering_angle = 0.0 
 
         self.ackermann_pub.publish(self.ackermann_msg)
@@ -480,10 +485,10 @@ def main():
     mpc_controller = MPCC(spawn_obstacles)
     rospy.sleep(1)
     rate = rospy.Rate(20)
-    mpc_controller.set_cost_params(qc=0.2, 
+    mpc_controller.set_cost_params(qc=0.5, 
                                    ql=0.1, 
                                    Ru = np.array([10, 10]),
-                                   Rv = 0.1, 
+                                   Rv = 0.1,
                                    Rx = np.array([0,0,0,0,1,0,1]),
                                    gamma=1)
     mpc_controller.formulate_ocp()

@@ -138,8 +138,8 @@ class SimulationPlotter:
         y = self.logs[:, 2]  # Vehicle's actual y positions
         num_samples = self.wp_len
         spline_param = np.linspace(0, num_samples - 1, num_samples)
-        spline_x = np.array([self.cs_x(p) for p in spline_param]) # Reshape to 1D array
-        spline_y = np.array([self.cs_y(p) for p in spline_param])  # Reshape to 1D array
+        spline_x = np.array([self.cs_x(p) for p in spline_param])
+        spline_y = np.array([self.cs_y(p) for p in spline_param])
         print(spline_x)
         for i in range(len(x)):
             distances = np.hypot(x[i] - spline_x, y[i] - spline_y)
@@ -170,13 +170,14 @@ class SimulationPlotter:
         time = self.logs[:, 0] - self.logs[0, 0]  # Convert to relative time
         self.ctes = self.compute_cross_track_error_from_spline()
 
-        plt.figure()
+        plt.figure(figsize=(10, 6))
         plt.plot(time[::10], self.ctes[::10], color="dodgerblue", linewidth=1.5)
         plt.axhline(y=1, color='r', linestyle='--', label='Error threshold')
-        plt.title("Cross-Track Error (Using Spline) Over Time")
-        plt.xlabel("Time (s)")
-        plt.ylabel("Cross-Track Error (m)")
+        plt.title("Cross-Track Error (Using Spline) Over Time", fontsize=16)
+        plt.xlabel("Time (s)", fontsize=14)
+        plt.ylabel("Cross-Track Error (m)", fontsize=14)
         plt.grid(True)
+        plt.ylim(0,2)
         plt.tight_layout()
         plt.savefig(os.path.join(self.output_dir, "cross_track_error_from_spline.png"))
         plt.show()
@@ -188,15 +189,16 @@ class SimulationPlotter:
         time = self.logs[:, 0] - self.logs[0, 0]  # Convert to relative time
         self.cte = self.compute_cross_track_error()
 
-        plt.figure()
+        plt.figure(figsize=(10, 6))
         plt.plot(time[::10], self.cte[::10], color="dodgerblue", linewidth=1.5)
-        plt.title("Cross-Track Error Over Time")
-        plt.xlabel("Time (s)")
-        plt.ylabel("Cross-Track Error (m)")
+        plt.title("Cross-Track Error Over Time", fontsize=16)
+        plt.xlabel("Time (s)", fontsize=14)
+        plt.ylabel("Cross-Track Error (m)", fontsize=14)
         plt.axhline(y=1, color='r', linestyle='--', label='Error threshold')
         plt.grid(True)
+        plt.ylim(0,2)
         plt.tight_layout()
-        plt.savefig(os.path.join(self.output_dir, "cross_track_error.png"))
+        plt.savefig(os.path.join(self.output_dir, "cross_track_error.png"), dpi=900)
         plt.show()
 
     def plot_waypoints_obstacles_and_trajectory(self):
@@ -218,7 +220,7 @@ class SimulationPlotter:
         vehicle_x = self.logs[:, 1]
         vehicle_y = self.logs[:, 2]
 
-        plt.figure()
+        plt.figure(figsize=(10, 8))
         plt.plot(waypoints_x, waypoints_y, label="Waypoints", marker=".", markersize=0.1, color="crimson")
         plt.plot(left_boundary_x, left_boundary_y, label="Left Boundary", color="green", linestyle="--")
         plt.plot(right_boundary_x, right_boundary_y, label="Right Boundary", color="blue", linestyle="--")
@@ -236,18 +238,18 @@ class SimulationPlotter:
                 plt.gca().add_patch(obstacle_circle)
 
         plt.axis("equal")
-        plt.xlabel("X")
-        plt.ylabel("Y")
-        plt.legend()
+        plt.xlabel("X", fontsize=14)
+        plt.ylabel("Y", fontsize=14)
+        plt.legend(fontsize=14)
         plt.grid(True)
         plt.tight_layout()
-        plt.savefig(os.path.join(self.output_dir, "waypoints_obstacles_trajectory.png"))
+        plt.savefig(os.path.join(self.output_dir, "waypoints_obstacles_trajectory.png"), dpi=900)
         plt.show()
     def plot_cross_track_error_comparison(self):
         """
         Plot both cross-track errors (from spline and from waypoints) on the same plot over time.
         This will help us understand how well our MPC tracks the original waypoints and their approximation.
-        This should also tell how good hte spline approximates the waypoints.
+        This should also tell how good the spline approximates the waypoints.
         """
         time = self.logs[:, 0] - self.logs[0, 0]  # Convert to relative time
 
@@ -256,19 +258,21 @@ class SimulationPlotter:
         ctes_waypoints = self.cte
 
         # Create a single plot for both
-        plt.figure()
+        plt.figure(figsize=(10, 6))
         plt.plot(time[::10], ctes_spline[::10], label="Cross-Track Error (Spline)", color="dodgerblue", linewidth=1.5)
         plt.plot(time[::10], ctes_waypoints[::10], label="Cross-Track Error (Waypoints)", color="crimson", linestyle="--", linewidth=1.5)
 
         # Add title and labels
-        plt.title("Cross-Track Error Comparison Over Time")
-        plt.xlabel("Time (s)")
-        plt.ylabel("Cross-Track Error (m)")
+        plt.title("Cross-Track Error Comparison Over Time", fontsize=16)
+        plt.xlabel("Time (s)", fontsize=14)
+        plt.ylabel("Cross-Track Error (m)", fontsize=14)
         plt.axhline(y=1, color='r', linestyle='--', label='Error threshold')
+        
+        plt.ylim(0,2)
         
         # Add grid and legend
         plt.grid(True)
-        plt.legend()
+        plt.legend(fontsize=14)
 
         # Save the plot and display it
         plt.tight_layout()
@@ -280,9 +284,9 @@ class SimulationPlotter:
         """
         self.plot_states_over_time()
         self.plot_cross_track_error()
-        self.plot_cross_track_error_from_spline()
+        #self.plot_cross_track_error_from_spline()
         self.plot_waypoints_obstacles_and_trajectory()
-        self.plot_cross_track_error_comparison()
+        #self.plot_cross_track_error_comparison()
 
 if __name__ == '__main__':
     plotter = SimulationPlotter()
