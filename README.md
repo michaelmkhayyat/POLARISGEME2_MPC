@@ -379,18 +379,18 @@ Some considerations regarding the implementation:
    
 4. Note that the path in "waypoints.csv" *does not exactly match* the centerline of the track. However, we chose to use it to align with the other controllers presented in the original repository: https://gitlab.engr.illinois.edu/gemillins/POLARIS_GEM_e2/. It is possible to obtain the exact centerline of the track by examining 'simple_track_green.world' and its corresponding files.
 
-## General Considerations and Comments
+## Results
 
-The following is the cross-track error during path tracking (without obstacles)
+The following is the cross-track error during path tracking (without obstacles):
 
 <div align="center">
 <a href="images/results/no_obstacles/"><img src="./images/results/no_obstacles/cross_track_error.png" width="800"></a>
 </div>
 
-The following is the cross-track error during path tracking (with obstacles)
+The following is the cross-track error during path tracking (with obstacles):
 
 <div align="center">
-<a href="images/results/no_obstacles/"><img src="./images/results/no_obstacles/cross_track_error.png" width="800"></a>
+<a href="images/results/with_obstacles/"><img src="./images/results/with_obstacles/cross_track_error.png" width="800"></a>
 </div>
 
 ## License

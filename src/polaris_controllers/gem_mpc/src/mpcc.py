@@ -398,7 +398,7 @@ class MPCC:
         # solutions.
         p_opts = {'verbose_init': False,'jit': True}
         s_opts = {'tol': 1e-1, 'print_level': 0, 'max_iter': 20}
-        rospy.logwarn("INTIALIZING SOLVER...")
+        rospy.logwarn("BUILDING SOLVER...")
         self.MPC.solver('ipopt', p_opts, s_opts)
 
         #Warm up
