@@ -1,1 +1,1 @@
-spawn_obstacles: 1
+spawn_obstacles: 0

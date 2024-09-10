@@ -41,7 +41,7 @@ class MPCC:
 
         # Optimizer hyperparameters
 
-        self.T = 0.2
+        self.T = 0.1
         self.N = 20
 
         # Waypoints 
