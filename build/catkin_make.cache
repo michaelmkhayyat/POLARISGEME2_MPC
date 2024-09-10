@@ -1,2 +1,0 @@
-gem_simulator/gem_description:gem_simulator/gem_gazebo:polaris_controllers/gem_mpc:polaris_controllers/gem_pure_pursuit_sim:polaris_controllers/gem_stanley_sim
--DCATKIN_DEVEL_PREFIX=/home/michael/Desktop/POLARISGEME2_MPC/devel -DCMAKE_INSTALL_PREFIX=/home/michael/Desktop/POLARISGEME2_MPC/install -G Unix Makefiles

@@ -1,8 +1,0 @@
-prefix=/home/michael/Desktop/POLARISGEME2_MPC/devel
-
-Name: gem_gazebo
-Description: Description of gem_gazebo
-Version: 1.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 
