@@ -26,7 +26,7 @@ import casadi as ca
 import math
 from dataclasses import dataclass
 
-from mpc_classes import Waypoints, VehicleParameters, VehicleDynamics
+from vehicle_and_path_classes import Waypoints, VehicleParameters, VehicleDynamics
 
 class MPCC:
     """
@@ -41,8 +41,8 @@ class MPCC:
 
         # Optimizer hyperparameters
 
-        self.T = 0.1
-        self.N = 20
+        self.T = 0.1                            # Discretization time-step
+        self.N = 20                             # Total MPC horizon
 
         # Waypoints 
 
@@ -64,13 +64,13 @@ class MPCC:
 
         ## States in LOCAL COORDINATES
 
-        self.vx_local = 0
-        self.vy_local = 0
+        self.vx_local = 0                       # x-velocity in local reference frame
+        self.vy_local = 0                       # y-velocity in local reference frame
         
         ## Control
 
-        self.delta_dot = 0  # steering angle velocity of front wheels
-        self.acc = 0        # longitudinal acceleration
+        self.delta_dot = 0                      # steering angle velocity of front wheels
+        self.acc = 0                            # longitudinal acceleration
 
 
         # Initalization of state and control vector
@@ -82,7 +82,7 @@ class MPCC:
         # Contouring control parameters
         
         self.nu_min = 0 
-        self.nu_max = 20
+        self.nu_max = 20/3.6
 
         # ROS Publishers and Subscribers
 
@@ -119,10 +119,16 @@ class MPCC:
         self.path_positions_x = []
         self.path_positions_y = []
 
-    
+        self.search_index = 0
     def set_cost_params(self, qc, ql, Ru, Rv, Rx, gamma):
         """
         Sets up the cost function parameters.
+        qc controls the contouring error cost
+        ql controls the lag error cost
+        Ru penalizes fluctations in control
+        Rx penalizes high values of some states
+        Rv penalizes fluctations in the projected velocity
+        gamma rewards progress
         """
 
         self.qc = qc
@@ -324,6 +330,7 @@ class MPCC:
         # Defining the parameters of the initial state and initial control.
         self.x0_param = self.MPC.parameter(self.dynamics.NX)
         self.u0_param = self.MPC.parameter(self.dynamics.NY)
+        self.al0_param = self.MPC.parameter(1)
         
         # Defining the cost function for the optimization
         # as defined in: 
@@ -356,7 +363,7 @@ class MPCC:
                     obs_radius = self.obstacles_radii[idx]
                     dist_sq = (self.X[0, k] - obs_x)**2 + (self.X[1, k] - obs_y)**2 - (0.5*obs_radius+self.vehicle_params.geometry.radius)**2
                     margin = 0.1
-                    J += 0.25*ca.if_else(dist_sq>=margin, -ca.log(dist_sq),  0.5 * (((dist_sq - 2 * margin) / margin)**2 - 1) - ca.log(margin)) 
+                    J += 0.125*ca.if_else(dist_sq>=margin, -ca.log(dist_sq),  0.5 * (((dist_sq - 2 * margin) / margin)**2 - 1) - ca.log(margin)) 
 
         # Defining the road boundary constraints
         self.MPC.subject_to(-4.25 +self.vehicle_params.geometry.radius <= self.waypoints.e_c(self.X[0,k], self.X[1,k], self.TH[k]))
@@ -388,6 +395,7 @@ class MPCC:
 
         
         self.MPC.subject_to(self.X[:,0] == self.x0_param[0:7])
+        self.MPC.subject_to(self.TH[0] == self.al0_param)
 
         self.MPC.minimize(J)
 
@@ -404,6 +412,7 @@ class MPCC:
         #Warm up
         self.MPC.set_value(self.x0_param, self.state)
         self.MPC.set_value(self.u0_param, self.control)
+        self.MPC.set_value(self.al0_param, self.current_arclength)
         
         # sol = self.MPC.solve()
         # self.MPC.set_initial(self.U, sol.value(self.U))
@@ -425,9 +434,11 @@ class MPCC:
 
         self.state = np.array([x1_p, x2_p, x3_p, x4_p, x5_p, x6_p,x7_p])
         self.control = np.array([self.delta_dot , self.acc ])
+        self.search_index, self.current_arclength = self.waypoints.find_closest_point_discrete(self.x, self.y, self.search_index, search_window=50)
         self.MPC.set_value(self.x0_param, self.state)
         self.MPC.set_value(self.u0_param, self.control)
-
+        self.MPC.set_value(self.al0_param, self.current_arclength)
+        
         try:
             sol = self.MPC.solve()
           
@@ -435,9 +446,7 @@ class MPCC:
 
             control = self.MPC.debug.value(self.U)
             state = self.MPC.debug.value(self.X)
-            TH = self.MPC.debug.value(self.TH)
             NU = self.MPC.debug.value(self.NU)
-            self.current_arclength = self.MPC.debug.value(self.TH)[0]
 
 
             # Extract the predicted waypoints (x, y) from the solution
@@ -456,10 +465,9 @@ class MPCC:
             control = sol.value(self.U)
             state = sol.value(self.X)
             self.MPC.set_initial(self.X, np.hstack((sol.value(self.X)[:,1:], sol.value(self.X)[:,-1:])))
-            self.MPC.set_initial(self.U, np.hstack((sol.value(self.U)[:,1:], sol.value(self.U)[:,-1:])))    
+            self.MPC.set_initial(self.U, np.hstack((sol.value(self.U)[:,1:], sol.value(self.U)[:,-1:])))   
+            self.MPC.set_initial(self.NU, np.hstack((sol.value(self.NU)[1:], sol.value(self.NU)[-1:])))
             self.MPC.set_initial(self.TH, np.hstack((sol.value(self.TH)[1:], sol.value(self.TH)[-1:])))
-            self.MPC.set_initial(self.NU, np.hstack((sol.value(self.NU)[1:], sol.value(self.NU)[-1:]))) 
-            self.current_arclength = sol.value(self.TH)[0]
 
         self.desired_delta = state[2,1]
         self.desired_v = state[3,1]
@@ -485,9 +493,9 @@ def main():
     mpc_controller = MPCC(spawn_obstacles)
     rospy.sleep(1)
     rate = rospy.Rate(10)
-    mpc_controller.set_cost_params(qc=0.25, 
-                                   ql=0.1, 
-                                   Ru = np.array([10, 10]),
+    mpc_controller.set_cost_params(qc=0.1, 
+                                   ql=1, 
+                                   Ru = np.array([0.1, 0.05]),
                                    Rv = 0.1,
                                    Rx = np.array([0,0,0,0,1,0,1]),
                                    gamma=1)

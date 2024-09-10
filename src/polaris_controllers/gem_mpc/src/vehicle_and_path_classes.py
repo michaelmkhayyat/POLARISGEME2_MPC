@@ -5,6 +5,9 @@ import casadi as ca
 import math
 from dataclasses import dataclass
 
+"""
+This file contains the classes which define the tire parameters, vehicle parameters (dynamic and geometric).
+"""
 @dataclass
 class TireParameters:
     Csf: float
@@ -52,8 +55,8 @@ class Waypoints:
         self.path_points_y = []
         self.previous_path_x = None
         self.previous_path_y = None
-        self.cs_x = None
-        self.cs_y = None
+        self.x_interpolant = None
+        self.y_interpolant = None
         self.Phi = None
         self.L = 0  # Length of the path in terms of waypoints
 
@@ -76,6 +79,15 @@ class Waypoints:
         self.path_points_x = new_path_x
         self.path_points_y = new_path_y
         return True  # Path changed, proceed with processing
+    
+    def calculate_cumulative_path_length(self,x_points, y_points):
+
+        distances = np.sqrt(np.diff(x_points)**2 + np.diff(y_points)**2)
+        cumulative_length = np.zeros(len(x_points))
+        cumulative_length[1:] = np.cumsum(distances)
+        total_length = np.sum(distances)
+        
+        return total_length, cumulative_length
 
     def cubic_spline(self, step):
         """
@@ -84,23 +96,56 @@ class Waypoints:
         x_list = self.path_points_x
         y_list = self.path_points_y
 
-        self.wp_len = len(x_list)
-        l_list = np.arange(0, self.wp_len, 1)
-        self.L = int(self.wp_len/step)*step
-        self.cs_x = ca.interpolant('cs_x','bspline',[l_list[::step]],x_list[::step])
-        self.cs_y = ca.interpolant('cs_y','bspline',[l_list[::step]],y_list[::step])
+        self.L, self.l_list = self.calculate_cumulative_path_length(x_list,y_list)
+
+        self.x_interpolant = ca.interpolant('x_interpolant','bspline',[self.l_list],x_list)
+        self.y_interpolant = ca.interpolant('y_interpolant','bspline',[self.l_list],y_list)
         th = ca.MX.sym('th')
 
-        # Tangent angle
-
-        self.Phi = ca.Function('Phi', [th], [ca.atan2(ca.jacobian(self.cs_y(th),th),(ca.jacobian(self.cs_x(th),th)))])
+        self.Phi = ca.Function('Phi', [th], [ca.atan2(ca.jacobian(self.y_interpolant(th),th),(ca.jacobian(self.x_interpolant(th),th)))])
 
         X = ca.MX.sym('X')
         Y = ca.MX.sym('Y')
         th = ca.MX.sym('th')
 
-        self.e_c = ca.Function('e_c', [X, Y, th], [ca.sin(self.Phi(th))*(X - self.cs_x(th)) - ca.cos(self.Phi(th))*(Y - self.cs_y(th))])
-        self.e_l = ca.Function('e_l', [X, Y, th], [-ca.cos(self.Phi(th))*(X - self.cs_x(th)) - ca.sin(self.Phi(th))*(Y - self.cs_y(th))]) 
+        self.e_c = ca.Function('e_c', [X, Y, th], [ca.sin(self.Phi(th))*(X - self.x_interpolant(th)) - ca.cos(self.Phi(th))*(Y - self.y_interpolant(th))])
+        self.e_l = ca.Function('e_l', [X, Y, th], [-ca.cos(self.Phi(th))*(X - self.x_interpolant(th)) - ca.sin(self.Phi(th))*(Y - self.y_interpolant(th))]) 
+
+        self.x_samples = np.array([self.x_interpolant(l).full().item() for l in self.l_list])
+        self.y_samples = np.array([self.y_interpolant(l).full().item() for l in self.l_list])
+
+    def find_closest_point_discrete(self, target_x, target_y, previous_index=None, search_window=200):
+        # Limit the search to a window of 200 points around the previous closest index
+        if previous_index is not None:
+            start_index = max(0, previous_index - search_window // 2)
+            end_index = min(len(self.l_list), previous_index + search_window // 2)
+            search_l_list = self.l_list[start_index:end_index]
+            base_index = start_index  # To adjust the index to the global index
+        else:
+            search_l_list = self.l_list
+            base_index = 0
+        
+        # Sample the x and y points along the limited arc length
+        x_samples = np.array([self.x_interpolant(l).full().item() for l in search_l_list])
+        y_samples = np.array([self.y_interpolant(l).full().item() for l in search_l_list])
+        
+        # Calculate the Euclidean distance between each sampled point and the target point (target_x, target_y)
+        distances = np.sqrt((x_samples - target_x)**2 + (y_samples - target_y)**2)
+        
+        # Find the index of the minimum distance
+        min_index = np.argmin(distances)
+        
+        # Get the arc length corresponding to the closest point
+        l_closest = search_l_list[min_index]
+        
+        # Get the (x, y) coordinates of the closest point
+        x_closest = x_samples[min_index]
+        y_closest = y_samples[min_index]
+        
+        # Return the global index of the closest point
+        closest_index = base_index + min_index
+        
+        return closest_index, l_closest
 
 class VehicleParameters:
     """
